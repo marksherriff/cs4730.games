@@ -1,10 +1,10 @@
 # Site settings
-title: CS 4730 Games Library
+title: UVA CS Games Library
 email: sherriff@virginia.edu
-url: https://cs4730.games
-description: "Games created as a part of CS 4730: Computer Game Design at the University of Virginia"
+url: https://uvacs.games
+description: "Games created as a part of Computer Game Design courses at the University of Virginia"
 keywords: "video games, computer science, university of virginia"
-skills: "Built with Monogame"
+skills: "Built with Monogame / GB Studio / Unity"
 meta_author: Sherriff Mark
 
 # Google webmaster tools
