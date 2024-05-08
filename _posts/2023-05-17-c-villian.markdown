@@ -7,5 +7,5 @@ alt: image-alt
 project-date: May 2023
 title: C'villian
 genre: Simulation
-description: "C'villian is a Tamagotchi-style game where the player controls a UVA student who is trying to navigate four years at the university while balancing learning, fun, and physical well-being. Each of these aspects of student life at UVA has an associated minigame in order to boost their levels. As they progress through the four years at UVA, the student will have access to various upgrades to give them advantages. Only the brightest will avoid failing and make it through to graduation. Download at <a href='/games/Cvillian.zip'>https://cs4730.games/games/Cvillian.zip</a>"
+description: "C'villian is a Tamagotchi-style game where the player controls a UVA student who is trying to navigate four years at the university while balancing learning, fun, and physical well-being. Each of these aspects of student life at UVA has an associated minigame in order to boost their levels. As they progress through the four years at UVA, the student will have access to various upgrades to give them advantages. Only the brightest will avoid failing and make it through to graduation. Download at <a href='/games/Cvillian.zip'>https://uvacs.games/games/Cvillian.zip</a>"
 ---

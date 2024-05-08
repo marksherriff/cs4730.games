@@ -7,5 +7,5 @@ alt: image-alt
 project-date: May 2023
 title: Golf You
 genre: Puzzle Platformer
-description: "Download at <a href='http://cs4730.games/games/GolfYou.zip'>http://cs4730.games/games/GolfYou.zip</a>!"
+description: "Download at <a href='http://uvacs.games/games/GolfYou.zip'>http://uvacs.games/games/GolfYou.zip</a>!"
 ---
