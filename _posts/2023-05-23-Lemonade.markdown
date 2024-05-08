@@ -1,0 +1,11 @@
+---
+layout: default
+modal-id: 12
+date: 2023-05-23
+img: lemonade.png
+alt: image-alt
+project-date: May 2024
+title: Lemonade Leap
+genre: Platformer
+description: "Get zesty with lemonade leap! Collect lemons for your little bro before time runs out- but watch out for the cows! Play in your browser at <a href='http://uvacs.games/games/gbstudio/lemonade'>http://uvacs.games/games/gbstudio/lemonade</a> <em>A game by Alexander Lindsay & Ronald Orellana</em>"
+---
