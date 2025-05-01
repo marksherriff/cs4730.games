@@ -12,5 +12,5 @@ description: "Ana, a devout nun, and Lilith, a mysterious vampire, find their fa
 <br>Supported in PC browser only. Controls: arrow keys for movement, Z/Enter for interaction, ESC for task list/tutorial (when unlocked)
 <br>Notes: We really wanted to focus on the worldbuilding aspect of the game, so talk to all the characters you see to learn more about the lore of CURSE & CURE!
 <br>References: The character sprites heavily reference OMORI; Omocat, LLC. (2020). OMORI [Video game]. OMOCAT, LLC. https://omori-game.com.
-<br><em>Credits: Mira Khan (Concept, Game Progression, Healing Game, Dialogue System, Overworld Transitions, Character Art, Background Sprites, Music, Dialogue Script, Animation Logic), Afia Paracha (Grid Movement, Dialogue System, Background Sprites, Collisions, Tutorials, Music), Adrina Khan (Dialogue Script, Overworld Transitions), Joyce Yang (Camera, Collisions, Character Sprites, Background Sprites)</em>"
+<br><em>Credits: Mira Khan (Concept, Game Progression, Healing Game, Dialogue System, Overworld Transitions, Character Art, Background Sprites, Music, Dialogue Script, Animation Logic), Afia Paracha (Grid Movement, Dialogue System, Background Sprites, Collisions, Tutorials, UI, Music), Adrina Khan (Dialogue Script, Overworld Transitions), Joyce Yang (Camera, Collisions, Character Sprites, Background Sprites)</em>"
 ---
