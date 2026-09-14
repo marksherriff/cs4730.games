@@ -274,7 +274,7 @@ else
 	if (sat.launch_angle < 0) then
 		sat.launch_angle += 1
 	end
-	if (not sat.gravity or not sat.launch_available) then
+	if not(sat.gravity or not sat.launch_available) then
 		if ((sat.launch_angle > 0.5) and (sat.launch_angle < 0.75)) then 
 			sat.speed = abs(sat.speed) * (-1)
 		else 
@@ -290,11 +290,8 @@ else
 		sat.radius -=0.02
 	else 
 		-- no gravity movement 
-		sat.x += sat.speed
-		local vy = tan(sat.launch_angle) * sat.speed
-		local max_vy = c_speed * 4  -- cap the vertical jump per frame
-		vy = mid(-max_vy, vy, max_vy)
-		sat.y += vy
+		sat.x += cos(sat.launch_angle) * sat.speed
+		sat.y += sin(sat.launch_angle) * sat.speed
 	end
 end
 end
