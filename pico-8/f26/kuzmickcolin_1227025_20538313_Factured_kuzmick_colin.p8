@@ -1,0 +1,1119 @@
+pico-8 cartridge // http://www.pico-8.com
+version 43
+__lua__
+function _init()
+	levels={
+		{x=0,y=0,w=16,h=16},
+		{x=16,y=0,w=16,h=16},
+		{x=32,y=0,w=32,h=16},
+		{x=64,y=0,w=16,h=16}
+	}
+
+	max_levels=#levels
+	level=1
+	game_over=false
+	gravity_active=false
+	player_gravity_dir="down"
+
+	reset_player(true)
+end
+
+function reset_player(reset_objects)
+	local broken_bricks={}
+
+	if not reset_objects then
+		for obj in all(objects) do
+			if obj.type=="wall"
+			and obj.map_tile==17
+			and obj.wall_triggered then
+				add(broken_bricks,{
+					x=obj.x,
+					y=obj.y,
+					dx=obj.dx,
+					dy=obj.dy,
+					active=obj.active,
+					wall_triggered=obj.wall_triggered,
+					wall_gravity_dir=obj.wall_gravity_dir,
+					start_x=obj.start_x,
+					start_y=obj.start_y
+				})
+			end
+		end
+	end
+
+	player={
+		x=8,
+		y=112,
+		w=6,
+		h=8,
+		dx=0,
+		dy=0,
+		flying=false,
+		flip=true,
+		gravity=0.25,
+		max_fall_speed=3.5
+	}
+
+	camera_x=0
+	gravity_active=false
+	player_gravity_dir="down"
+
+	find_objects()
+
+	if not reset_objects then
+		for saved in all(broken_bricks) do
+			for obj in all(objects) do
+				if obj.type=="wall"
+				and obj.map_tile==17
+				and obj.start_x==saved.start_x
+				and obj.start_y==saved.start_y then
+					del(objects,obj)
+					break
+				end
+			end
+
+			local broken=make_object(
+				"wall",
+				saved.x,
+				saved.y,
+				nil,
+				17
+			)
+
+			broken.start_x=saved.start_x
+			broken.start_y=saved.start_y
+			broken.dx=saved.dx
+			broken.dy=saved.dy
+			broken.active=saved.active
+			broken.wall_triggered=saved.wall_triggered
+			broken.wall_gravity_dir=saved.wall_gravity_dir
+
+			add(objects,broken)
+		end
+	end
+end
+
+function find_objects()
+	objects={}
+
+	local l=levels[level]
+
+	for y=0,l.h-1 do
+		for x=0,l.w-1 do
+			local tile=mget(l.x+x,l.y+y)
+
+			if fget(tile,0) then
+				local obj=make_object(
+					"wall",
+					x*8,
+					y*8,
+					nil,
+					tile
+				)
+
+				obj.start_x=x*8
+				obj.start_y=y*8
+
+				add(objects,obj)
+
+			elseif tile==5 then
+				add(objects,make_object(
+					"bomb",
+					x*8,
+					y*8,
+					"down",
+					tile
+				))
+
+			elseif tile==6 then
+				add(objects,make_object(
+					"hourglass",
+					x*8,
+					y*8,
+					"down",
+					tile
+				))
+
+			elseif tile==7 then
+				add(objects,make_object(
+					"hourglass",
+					x*8,
+					y*8,
+					"up",
+					tile
+				))
+
+			elseif tile==8 then
+				add(objects,make_object(
+					"hourglass",
+					x*8,
+					y*8,
+					"left",
+					tile
+				))
+
+			elseif tile==9 then
+				add(objects,make_object(
+					"hourglass",
+					x*8,
+					y*8,
+					"right",
+					tile
+				))
+
+			elseif tile==13 then
+				add(objects,make_object(
+					"bomb",
+					x*8,
+					y*8,
+					"up",
+					tile
+				))
+
+			elseif tile==14 then
+				add(objects,make_object(
+					"bomb",
+					x*8,
+					y*8,
+					"left",
+					tile
+				))
+
+			elseif tile==15 then
+				add(objects,make_object(
+					"bomb",
+					x*8,
+					y*8,
+					"right",
+					tile
+				))
+
+			elseif fget(tile,1) then
+				add(objects,make_object(
+					"door",
+					x*8,
+					y*8,
+					"down",
+					tile
+				))
+
+			elseif tile==3 then
+				add(objects,make_object(
+					"scruken",
+					x*8,
+					y*8,
+					"down",
+					tile
+				))
+			end
+		end
+	end
+end
+
+function make_object(type,x,y,gravity_dir,map_tile)
+	local w=8
+	local h=8
+	local hitbox_x=0
+	local hitbox_y=0
+
+	if type=="scruken" then
+		w=6
+		h=6
+		hitbox_x=1
+		hitbox_y=1
+	end
+
+	return {
+		type=type,
+		x=x,
+		y=y,
+		w=w,
+		h=h,
+		hitbox_x=hitbox_x,
+		hitbox_y=hitbox_y,
+		dx=0,
+		dy=0,
+		gravity_dir=nil,
+		start_gravity=gravity_dir,
+		gravity_accel=0.2,
+		max_speed=2.5,
+		active=true,
+		movable=true,
+		solid=type=="wall",
+		map_tile=map_tile,
+		start_x=x,
+		start_y=y,
+		wall_triggered=false,
+		wall_gravity_dir=nil,
+		wall_accel=0.01,
+		wall_max_speed=1.5
+	}
+end
+
+function _update()
+	if game_over then
+		if btnp(5) then
+			level=1
+			game_over=false
+			reset_player(true)
+		end
+
+		return
+	end
+
+	update_player()
+
+	if level!=max_levels then
+		if player_out_of_bounds() then
+			reset_player(false)
+			return
+		end
+	end
+
+	update_objects()
+
+	if level!=max_levels then
+		if player_out_of_bounds() then
+			reset_player(false)
+			return
+		end
+	end
+
+	update_camera()
+
+	if touches_hazard() then
+		reset_player(false)
+		return
+	end
+
+	if touching_door() then
+		if level<max_levels then
+			level+=1
+			reset_player(true)
+		else
+			game_over=true
+		end
+	end
+end
+
+function update_player()
+	local move=0
+
+	if btn(1) then
+		move=1
+		player.flip=true
+	elseif btn(0) then
+		move=-1
+		player.flip=false
+	end
+
+	player.dx=move*1.2
+
+	if btnp(5) and player_on_ground() then
+		player.dy=-3.5
+	end
+
+	if player_gravity_dir=="down" then
+		player.dy+=player.gravity
+
+		if player.dy>player.max_fall_speed then
+			player.dy=player.max_fall_speed
+		end
+
+	elseif player_gravity_dir=="up" then
+		player.dy-=player.gravity
+
+		if player.dy<-player.max_fall_speed then
+			player.dy=-player.max_fall_speed
+		end
+
+	elseif player_gravity_dir=="left" then
+		player.dx-=player.gravity
+
+		if player.dx<-player.max_fall_speed then
+			player.dx=-player.max_fall_speed
+		end
+
+	elseif player_gravity_dir=="right" then
+		player.dx+=player.gravity
+
+		if player.dx>player.max_fall_speed then
+			player.dx=player.max_fall_speed
+		end
+	end
+
+	move_player_horizontal()
+	move_player_vertical()
+
+	if level==max_levels then
+		wrap_player()
+	end
+
+	activate_wall_objects()
+end
+
+function move_player_horizontal()
+	if player.dx==0 then
+		return
+	end
+
+	local steps=ceil(abs(player.dx))
+
+	for i=1,steps do
+		local amount=player.dx/steps
+		local obj=get_colliding_object(
+			player.x+amount,
+			player.y
+		)
+
+		if obj then
+			if amount>0 then
+				player.x=obj.x-player.w
+			else
+				player.x=obj.x+obj.w
+			end
+
+			player.dx=0
+			return
+		end
+
+		player.x+=amount
+	end
+end
+
+function move_player_vertical()
+	if player.dy==0 then
+		return
+	end
+
+	local steps=ceil(abs(player.dy))
+
+	for i=1,steps do
+		local amount=player.dy/steps
+		local obj=get_colliding_object(
+			player.x,
+			player.y+amount
+		)
+
+		if obj then
+			if amount>0 then
+				player.y=obj.y-player.h
+			else
+				player.y=obj.y+obj.h
+			end
+
+			player.dy=0
+			return
+		end
+
+		player.y+=amount
+	end
+end
+
+function player_on_ground()
+	local obj=get_colliding_object(
+		player.x,
+		player.y+1
+	)
+
+	if obj then
+		return true
+	end
+
+	return false
+end
+
+function activate_wall_objects()
+	local x1=flr(player.x/8)
+	local x2=flr((player.x+player.w-1)/8)
+
+	local below=flr((player.y+player.h)/8)
+
+	for x=x1,x2 do
+		activate_wall_at(
+			x,
+			below,
+			"up"
+		)
+	end
+
+	local left=flr((player.x-1)/8)
+
+	local y1=flr(player.y/8)
+	local y2=flr((player.y+player.h-1)/8)
+
+	for y=y1,y2 do
+		activate_wall_at(
+			left,
+			y,
+			"left"
+		)
+	end
+
+	local right=flr((player.x+player.w)/8)
+
+	for y=y1,y2 do
+		activate_wall_at(
+			right,
+			y,
+			"right"
+		)
+	end
+
+	local above=flr((player.y-1)/8)
+
+	for x=x1,x2 do
+		activate_wall_at(
+			x,
+			above,
+			"down"
+		)
+	end
+end
+
+function activate_wall_at(x,y,dir)
+	local l=levels[level]
+
+	if x<0 or x>=l.w or y<0 or y>=l.h then
+		return
+	end
+
+	local px=x*8
+	local py=y*8
+
+	for obj in all(objects) do
+		if obj.active
+		and obj.type=="wall"
+		and obj.x==px
+		and obj.y==py then
+
+			if not obj.wall_triggered then
+				obj.wall_triggered=true
+				obj.wall_gravity_dir=dir
+			end
+
+			return
+		end
+	end
+end
+
+function get_colliding_object(x,y)
+	for obj in all(objects) do
+		if obj.active and obj.solid then
+			if x<obj.x+obj.w
+			and x+player.w>obj.x
+			and y<obj.y+obj.h
+			and y+player.h>obj.y then
+				return obj
+			end
+		end
+	end
+
+	local l=levels[level]
+
+	if y<0 then
+		return {
+			x=0,
+			y=-1,
+			w=l.w*8,
+			h=1,
+			type="boundary"
+		}
+	end
+
+	if x<0 then
+		return {
+			x=-1,
+			y=0,
+			w=1,
+			h=l.h*8,
+			type="boundary"
+		}
+	end
+
+	if x+player.w>l.w*8 then
+		return {
+			x=l.w*8,
+			y=0,
+			w=1,
+			h=l.h*8,
+			type="boundary"
+		}
+	end
+
+	return nil
+end
+
+function player_out_of_bounds()
+	local l=levels[level]
+
+	if player.x<=0 then
+		return true
+	end
+
+	if player.y<=0 then
+		return true
+	end
+
+	if player.x+player.w>=l.w*8 then
+		return true
+	end
+
+	if player.y+player.h>=l.h*8 then
+		return true
+	end
+
+	return false
+end
+
+function wrap_player()
+	local l=levels[level]
+
+	local level_width=l.w*8
+	local level_height=l.h*8
+
+	if player.x+player.w<0 then
+		player.x=level_width-player.w
+	elseif player.x>level_width then
+		player.x=0
+	end
+
+	if player.y+player.h<0 then
+		player.y=level_height-player.h
+	elseif player.y>level_height then
+		player.y=0
+	end
+end
+
+function update_objects()
+	for obj in all(objects) do
+		if obj.active then
+			update_object(obj)
+		end
+	end
+end
+
+function update_object(obj)
+	if obj.type=="bomb" then
+		update_bomb(obj)
+
+	elseif obj.type=="hourglass" then
+		update_hourglass(obj)
+
+	elseif obj.type=="door" then
+		update_generic_object(obj)
+
+	elseif obj.type=="scruken" then
+		update_generic_object(obj)
+
+	elseif obj.type=="wall" then
+		update_wall_object(obj)
+	end
+end
+
+function update_wall_object(obj)
+	if not obj.wall_triggered then
+		return
+	end
+
+	local oldx=obj.x
+	local oldy=obj.y
+
+	if obj.wall_gravity_dir=="up" then
+		obj.dy-=obj.wall_accel
+
+		if obj.dy<-obj.wall_max_speed then
+			obj.dy=-obj.wall_max_speed
+		end
+
+	elseif obj.wall_gravity_dir=="down" then
+		obj.dy+=obj.wall_accel
+
+		if obj.dy>obj.wall_max_speed then
+			obj.dy=obj.wall_max_speed
+		end
+
+	elseif obj.wall_gravity_dir=="left" then
+		obj.dx-=obj.wall_accel
+
+		if obj.dx<-obj.wall_max_speed then
+			obj.dx=-obj.wall_max_speed
+		end
+
+	elseif obj.wall_gravity_dir=="right" then
+		obj.dx+=obj.wall_accel
+
+		if obj.dx>obj.wall_max_speed then
+			obj.dx=obj.wall_max_speed
+		end
+	end
+
+	if gravity_active
+	and (obj.dx!=0 or obj.dy!=0) then
+		apply_object_gravity(obj)
+	end
+
+	obj.x+=obj.dx
+	obj.y+=obj.dy
+
+	if obj.map_tile==17 then
+		wrap_object(obj)
+	else
+		if level==max_levels then
+			wrap_object(obj)
+		else
+			local l=levels[level]
+
+			if obj.x<-8 or obj.x>l.w*8 or obj.y<-8 or obj.y>l.h*8 then
+				obj.active=false
+			end
+		end
+	end
+
+	push_player_with_object(obj,oldx,oldy)
+end
+
+function push_player_with_object(obj,oldx,oldy)
+	if player.x<obj.x+obj.w
+	and player.x+player.w>obj.x
+	and player.y<obj.y+obj.h
+	and player.y+player.h>obj.y then
+
+		local moved_x=obj.x-oldx
+		local moved_y=obj.y-oldy
+
+		if abs(moved_y)>abs(moved_x) then
+			player.y+=moved_y
+		else
+			player.x+=moved_x
+		end
+	end
+end
+
+function update_generic_object(obj)
+	if not obj.movable then
+		return
+	end
+
+	if not gravity_active then
+		return
+	end
+
+	apply_object_gravity(obj)
+	move_object(obj)
+end
+
+function update_bomb(obj)
+	if not obj.launched then
+		if player_touches_object(obj) then
+			obj.dx=player.dx
+			obj.dy=player.dy
+			obj.launched=true
+		end
+
+		return
+	end
+
+	if gravity_active then
+		apply_object_gravity(obj)
+	end
+
+	move_object(obj)
+end
+
+function update_hourglass(obj)
+	if player_touches_object(obj) then
+		activate_gravity(obj)
+		return
+	end
+
+	if gravity_active then
+		apply_object_gravity(obj)
+		move_object(obj)
+	end
+end
+
+function activate_gravity(hourglass)
+	gravity_active=true
+
+	local gravity_dir="down"
+
+	if level==2 then
+		gravity_dir="right"
+	end
+
+	player_gravity_dir=gravity_dir
+
+	for obj in all(objects) do
+		if obj.active then
+			if obj.type!="wall"
+			or obj.dx!=0
+			or obj.dy!=0 then
+				obj.gravity_dir=gravity_dir
+			end
+		end
+	end
+
+	hourglass.active=false
+end
+
+function apply_object_gravity(obj)
+	if obj.gravity_dir==nil then
+		return
+	end
+
+	if obj.gravity_dir=="down" then
+		obj.dy+=obj.gravity_accel
+
+		if obj.dy>obj.max_speed then
+			obj.dy=obj.max_speed
+		end
+
+	elseif obj.gravity_dir=="up" then
+		obj.dy-=obj.gravity_accel
+
+		if obj.dy<-obj.max_speed then
+			obj.dy=-obj.max_speed
+		end
+
+	elseif obj.gravity_dir=="left" then
+		obj.dx-=obj.gravity_accel
+
+		if obj.dx<-obj.max_speed then
+			obj.dx=-obj.max_speed
+		end
+
+	elseif obj.gravity_dir=="right" then
+		obj.dx+=obj.gravity_accel
+
+		if obj.dx>obj.max_speed then
+			obj.dx=obj.max_speed
+		end
+	end
+end
+
+function move_object(obj)
+	local x=obj.x+obj.dx
+	local y=obj.y+obj.dy
+
+	if obj.type!="wall" then
+		for wall in all(objects) do
+			if wall.active
+			and wall.type=="wall"
+			and wall.solid then
+
+				if x<wall.x+wall.w
+				and x+obj.w>wall.x
+				and y<wall.y+wall.h
+				and y+obj.h>wall.y then
+
+					if obj.dx>0 then
+						x=wall.x-obj.w
+						obj.dx=0
+					elseif obj.dx<0 then
+						x=wall.x+wall.w
+						obj.dx=0
+					end
+
+					if obj.dy>0 then
+						y=wall.y-obj.h
+						obj.dy=0
+					elseif obj.dy<0 then
+						y=wall.y+wall.h
+						obj.dy=0
+					end
+				end
+			end
+		end
+	end
+
+	obj.x=x
+	obj.y=y
+
+	if level==max_levels then
+		wrap_object(obj)
+		return
+	end
+
+	local l=levels[level]
+
+	if obj.x<-8 or obj.x>l.w*8 or obj.y<-8 or obj.y>l.h*8 then
+		obj.active=false
+	end
+end
+
+function wrap_object(obj)
+	local l=levels[level]
+
+	local level_width=l.w*8
+	local level_height=l.h*8
+
+	if obj.x+obj.w<0 then
+		obj.x=level_width-obj.w
+	elseif obj.x>level_width then
+		obj.x=0
+	end
+
+	if obj.y+obj.h<0 then
+		obj.y=level_height-obj.h
+	elseif obj.y>level_height then
+		obj.y=0
+	end
+end
+
+function player_touches_object(obj)
+	return player.x<obj.x+obj.hitbox_x+obj.w
+		and player.x+player.w>obj.x+obj.hitbox_x
+		and player.y<obj.y+obj.hitbox_y+obj.h
+		and player.y+player.h>obj.y+obj.hitbox_y
+end
+
+function touches_hazard()
+	for obj in all(objects) do
+		if obj.active and obj.type=="scruken" then
+			if player_touches_object(obj) then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+function touching_door()
+	for obj in all(objects) do
+		if obj.active and obj.type=="door" then
+			if player_touches_object(obj) then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+function update_camera()
+	local l=levels[level]
+	local level_width=l.w*8
+
+	camera_x=mid(0,player.x-60,level_width-128)
+end
+
+function _draw()
+	cls(1)
+
+	camera(camera_x,0)
+
+	draw_level()
+	draw_objects()
+
+	if game_over then
+		camera(0,0)
+
+		rectfill(18,53,109,75,0)
+		rect(18,53,109,75,7)
+		print("∧y∧▤m █r웃sh!",43,59,8)
+		print("purg⧗∧g ★∧☉m0l♪",45,67,7)
+		print("x: restart",40,75,7)
+	else
+		draw_player()
+	end
+
+	camera()
+end
+
+function draw_level()
+	local l=levels[level]
+
+	for y=0,l.h-1 do
+		for x=0,l.w-1 do
+			local tile=mget(l.x+x,l.y+y)
+
+			if tile>0
+			and not fget(tile,0)
+			and tile!=3
+			and tile!=5
+			and tile!=6
+			and tile!=7
+			and tile!=8
+			and tile!=9
+			and tile!=13
+			and tile!=14
+			and tile!=15
+			and not fget(tile,1) then
+				spr(tile,x*8,y*8)
+			end
+		end
+	end
+end
+
+function draw_objects()
+	for obj in all(objects) do
+		if obj.active then
+			if obj.type=="bomb" then
+				draw_object_sprite(obj,5)
+
+			elseif obj.type=="hourglass" then
+				draw_object_sprite(obj,6)
+
+			elseif obj.type=="door" then
+				draw_object_sprite(obj,obj.map_tile)
+
+			elseif obj.type=="scruken" then
+				draw_object_sprite(obj,3)
+
+			elseif obj.type=="wall" then
+				spr(obj.map_tile,obj.x,obj.y)
+			end
+		end
+	end
+end
+
+function draw_object_sprite(obj,sprite)
+	if obj.gravity_dir=="down" or obj.gravity_dir==nil then
+		spr(sprite,obj.x,obj.y)
+
+	elseif obj.gravity_dir=="up" then
+		spr(sprite,obj.x,obj.y,1,1,false,true)
+
+	elseif obj.gravity_dir=="left" then
+		draw_sprite_rotated(sprite,obj.x,obj.y,1,false)
+
+	elseif obj.gravity_dir=="right" then
+		draw_sprite_rotated(sprite,obj.x,obj.y,-1,false)
+	end
+end
+
+player_sprite=0
+
+function draw_player()
+	spr(
+		player_sprite,
+		player.x,
+		player.y,
+		1,
+		1,
+		player.flip,
+		false
+	)
+end
+
+function draw_sprite_rotated(sprite,x,y,dir,flip)
+	local sx=(sprite%16)*8
+	local sy=flr(sprite/16)*8
+
+	for i=0,7 do
+		for j=0,7 do
+			local c=sget(sx+i,sy+j)
+
+			if c!=0 then
+				local px,py
+
+				if dir==1 then
+					px=7-j
+					py=i
+				else
+					px=j
+					py=7-i
+				end
+
+				if flip then
+					py=7-py
+				end
+
+				pset(x+px,y+py,c)
+			end
+		end
+	end
+end
+__gfx__
+00000000882288880d555550000000000000000000000009ffffffff000000000000000000000000000000000000000000000000000000000000000000000000
+0099990022128222d000000500000000000b0000000000d8f000000f000000000000000000000000000000000000000000000000000000000000000000ccccc0
+0909090011122111d04aaa0500000500003b7000005550000fa000f000000000000000000000000000000000000000000000000000000000000000000ccccccc
+0099990022222222d04aaa0500555500003bb0000556550000faaf0000000000000000000000000000000000000000000000000000000000000000000ccccccc
+0007700088888822d04aaa0500050500003bb0000555650000faaf0000000000000000000000000000000000000000000000000000000000000000000ccccccc
+0999999082222212d04aaa0500055550003bb000055565000f999af000000000000000000000000000000000000000000000000000000000000000000ccccccc
+0999999021111112d04aaa05000500000003000000555000f94444af00000000000000000000000000000000000000000000000000000000000000000ccccccc
+0090090022222222d0499905000000000000000000000000ffffffff000000000000000000000000000000000000000000000000000000000000000000ccccc0
+00000000882280880d55505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000212800200000005000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ccc00
+0000000000022011004aa00500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000022000222d0000a050000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f000
+0000000088808022d040a00500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f00
+0000000082022012d00aa00500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f00
+0000000021001012d000a0050000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f000
+0000000022022202d009990500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000007c700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000007c700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000077700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000b777b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000b090b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000444444440000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000020000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000040000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000040000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000555555000000000011111100000000001111110000000000111111000000000000000000000000000000000000000000000000000000000000000000000
+00055555566770000001111112208000000111111667700000011111166880000000000000000000000000000000000000000000000000000000000000000000
+00555555566677000011111112028800001111111666770000111111166688000000000000000000000000000000000000000000000000000000000000000000
+05565556666577700112111220218880011611166661777001161116666188800000000000000000000000000000000000000000000000000000000000000000
+05555556666567700011111202212880011111166661677001111116666168800000000000000000000000000000000000000000000000000000000000000000
+55555655565666771000121102120008111116111616667711111611161666880000000000000000000000000000000000000000000000000000000000000000
+55555655555566771110021101100288111116111111667711111611111166880000000000000000000000000000000000000000000000000000000000000000
+55665555565566771122000100012288116611111611667711661111161166880000000000000000000000000000000000000000000000000000000000000000
+56665556566556771222110202211288166611161661167716661116166116880000000000000000000000000000000000000000000000000000000000000000
+56565555566557771212111000211888161611111661177716161111166118880000000000000000000000000000000000000000000000000000000000000000
+56666555565567771222210010112888166661111611677716666111161168880000000000000000000000000000000000000000000000000000000000000000
+06666666666667700222200222222880066666666666677006666666666668800000000000000000000000000000000000000000000000000000000000000000
+06656656566677700221201212228880066166161666777006616616166688800000000000000000000000000000000000000000000000000000000000000000
+00666666667777000022222220888800006666666677770000666666668888000000000000000000000000000000000000000000000000000000000000000000
+00066667777770000002222880888000000666677777700000066668888880000000000000000000000000000000000000000000000000000000000000000000
+00000777777000000000088888000000000007777770000000000888888000000000000000000000000000000000000000000000000000000000000000000000
+0d555550000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d0000005000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d0499905000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0d555550000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d0000005000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d04aaa05000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+d0499905000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__gff__
+0001020000000000000000000000000000010200000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__map__
+0103000001000000000000000000000101000000000000000000000000000001030303031111111103030303030303030303030303030303030303030303030103111111110101111111111111111103000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000001000000040004000000000101000000000000000000000000000001000011110000000000000000000000000000000000000100000000000000003f11000000010000003100310000000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000001000000000000000000000101000000000000000000000000000001001111000000000000000000000000000000000000000100000000000000003f11000000010000000000000000000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000001000000030303030101010101000200000000000000000000000001001100000000000000000000000000000000000000000100000300000000003f11000000030000000303030301010111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000001004041000000000000000101010111000000444500000000000601110000000000000000000000000000000000000000001100030303000000003f11000000110042430000000000000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000001005051000000000000000101000000000000545500000000010101110000000002000000464700060000000000000000001100000300000000003f11000000110052530000000000000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000001020000000000000000000101000000000000000000000000000001010000003131310000565700310000003100000000001100000000000000003f01000000110000000000000000000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000001030000003131313131000101000000000000000000000000000001010303030303030000000000000000001101010000001100000300000000003f11000000110000060000000000000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000000000000000000000000000101000000000000000000030300000001011111000000000000000000000000000000000000001100030303000000003f11000000030000000031313100000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000000000000000000000006000101000000000000000000000000000011011100000000000000000000000000000000000000000100000300000000003f11000000030000000000000000060001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000000000000000000000101010111000000000000000000000000000011010000000000000000000000000000000000000000000100000000000000003f11000000030000000000000011110001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000000000000000000000000000111000000000000000000000000000001010000000000000000000000000000000000000000000100000300000000003f11111100030000000000000312000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000000313131313100000000000111030303030303030303000000000001110000000000000000000000000000000303030303000100030303000000003f11001100001111110101000300000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000000000000000000000000000101000000000000000000000000000001010000000000000000000300000300000000000000000100000300000000003f11001100000000000000000300000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0100000000000000000000000000000101000000000400000000000000000001010000000000310000000000000000000000000000000100000000000000003f11001100000000000000000300000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101110101010101010101010101010101010101010101010101011111010101010101111101110000000000000000001101010101010101010101010101010103311111111111111111111101010103000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__sfx__
+051e00101f7500b700027000b700237500270002000020001a7502a000210002d7001f750297002b7002200024700200001f0001d7001b000141001210017700111000e100117000c1000b1000d7000b70009700
+031c00101f7500b700027000b700237500270002000020001a7502a000210002d7001f750297002b7002200002000020000200002000020001b0000200010000100000e0000d0000b00008000070000500003000
+__music__
+00 00424344
+

@@ -5,7 +5,7 @@ The gallery URL is `https://uvacs.games/pico-8/index.html`.
 
 ## Add games
 
-1. Put student cartridges directly in `f26/`, named `gamename-lastname-firstname.p8`.
+1. Put student cartridges directly in `f26/`, named `gamename-lastname-firstname.p8`. Canvas download names such as `student_123456_78901234_gamename-lastname-firstname.p8` are accepted too, as are duplicate version suffixes such as `-1` and ` (1)`.
 2. Run `python3 build_gallery.py` from this folder (requires the full desktop PICO-8 application).
 3. Upload `index.html`, `gallery.css`, and the entire `f26/` directory to the server's `pico-8/` directory.
 

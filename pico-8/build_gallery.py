@@ -4,6 +4,7 @@ import argparse
 import html
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -17,7 +18,16 @@ def display(value):
     return value.title() if value.islower() else value
 
 def metadata(path):
-    parts = path.stem.rsplit('-', 2)
+    name = re.sub(r'\.p8$', '', path.stem, flags=re.IGNORECASE)
+    canvas_name = re.match(r'^[^_]+_\d+_\d+_(?P<name>.+)$', name)
+    if canvas_name:
+        name = canvas_name.group('name')
+        name = re.sub(r'(?:\s*\(\d+\)|[-_ ]\d+)$', '', name)
+    else:
+        name = re.sub(r'\s*\(\d+\)$', '', name)
+    parts = name.rsplit('-', 2)
+    if len(parts) != 3 or any(not p.strip() for p in parts):
+        parts = name.rsplit('_', 2)
     if len(parts) != 3 or any(not p.strip() for p in parts):
         raise ValueError(f'{path.name}: use gamename-lastname-firstname.p8')
     title, last, first = parts

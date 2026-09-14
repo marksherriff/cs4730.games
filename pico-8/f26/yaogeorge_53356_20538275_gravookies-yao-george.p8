@@ -1,0 +1,461 @@
+pico-8 cartridge // http://www.pico-8.com
+version 43
+__lua__
+-- gravookies
+-- "gravity is broken"
+
+function _init()
+    score=0
+    lives=3
+    game_over=false
+
+    player={
+        x=64,
+        y=64,
+        dx=0,
+        dy=0,
+        r=3,
+        accel=.25,
+        maxspd=2.2,
+        friction=.82,
+        inv=0,
+        face=1
+    }
+
+    good={}
+    bad={}
+
+    gravity_dirs={
+        {x=0,y=1},
+        {x=1,y=0},
+        {x=0,y=-1},
+        {x=-1,y=0}
+    }
+
+    gravity=gravity_dirs[1]
+    gravity_timer=180
+    gravity_warning=60
+
+    -- starting objects
+    for i=1,8 do
+        spawn_good()
+    end
+
+    for i=1,3 do
+        spawn_bad()
+    end
+
+    spawn_timer=0
+end
+
+
+function _update()
+    if game_over then
+        if btnp(4) or btnp(5) then
+            _init()
+        end
+        return
+    end
+
+    update_player()
+    update_objects()
+    update_gravity()
+
+    if player.inv>0 then
+        player.inv-=1
+    end
+
+    -- gradually add more objects
+    spawn_timer-=1
+
+    if spawn_timer<=0 then
+        spawn_good()
+
+        -- occasionally add another danger
+        if score>=10 and rnd(1)<.35 then
+            spawn_bad()
+        end
+
+        spawn_timer=get_spawn_rate()
+    end
+end
+
+
+-- player movement
+
+function update_player()
+    local ax=0
+    local ay=0
+
+    if btn(0) then 
+        ax-=1
+        player.face=-1
+    end
+    if btn(1) then 
+        ax+=1
+        player.face=1 
+    end
+    if btn(2) 
+        then ay-=1 
+    end
+    if btn(3) 
+        then ay+=1 
+    end
+
+    player.dx+=ax*player.accel
+    player.dy+=ay*player.accel
+
+    -- friction
+    if ax==0 then
+        player.dx*=player.friction
+    end
+
+    if ay==0 then
+        player.dy*=player.friction
+    end
+
+    -- speed limit
+    player.dx=mid(-player.maxspd,player.dx,player.maxspd)
+    player.dy=mid(-player.maxspd,player.dy,player.maxspd)
+
+    player.x+=player.dx
+    player.y+=player.dy
+
+    -- screen boundaries
+    if player.x<3 then
+        player.x=3
+        player.dx=0
+    end
+
+    if player.x>124 then
+        player.x=124
+        player.dx=0
+    end
+
+    if player.y<3 then
+        player.y=3
+        player.dy=0
+    end
+
+    if player.y>124 then
+        player.y=124
+        player.dy=0
+    end
+end
+
+
+-- object physics
+
+function update_objects()
+    for p in all(good) do
+        move_object(p)
+
+        if distance(player.x,player.y,p.x,p.y)<player.r+p.r then
+            score+=1
+            sfx(00)
+            del(good,p)
+        end
+    end
+
+    for p in all(bad) do
+        move_object(p)
+
+        if player.inv<=0 and
+           distance(player.x,player.y,p.x,p.y)<player.r+p.r then
+
+            lives-=1
+            sfx(01)
+            del(bad,p)
+            player.inv=90
+
+            -- knock player away
+            local dx=player.x-p.x
+            local dy=player.y-p.y
+            local d=max(1,sqrt(dx*dx+dy*dy))
+
+            player.dx=dx/d*2.5
+            player.dy=dy/d*2.5
+
+            if lives<=0 then
+                game_over=true
+            end
+        end
+    end
+end
+
+
+function move_object(p)
+    -- gravity accelerates objects
+    p.dx+=gravity.x*p.g
+    p.dy+=gravity.y*p.g
+
+    -- speed limit
+    p.dx=mid(-p.maxspd,p.dx,p.maxspd)
+    p.dy=mid(-p.maxspd,p.dy,p.maxspd)
+
+    p.x+=p.dx
+    p.y+=p.dy
+
+    -- bounce off walls
+    if p.x<p.r then
+        p.x=p.r
+        p.dx=abs(p.dx)
+    elseif p.x>127-p.r then
+        p.x=127-p.r
+        p.dx=-abs(p.dx)
+    end
+
+    if p.y<p.r then
+        p.y=p.r
+        p.dy=abs(p.dy)
+    elseif p.y>127-p.r then
+        p.y=127-p.r
+        p.dy=-abs(p.dy)
+    end
+
+    -- friction keeps things from becoming impossibly fast
+    p.dx*=.995
+    p.dy*=.995
+end
+
+
+-- gravity
+
+function update_gravity()
+    gravity_timer-=1
+
+    if gravity_timer<=0 then
+        -- pick a new direction
+        local old=gravity
+        local new=gravity_dirs[flr(rnd(4))+1]
+
+        -- avoid immediately picking the same direction
+        while new==old do
+            new=gravity_dirs[flr(rnd(4))+1]
+        end
+
+        gravity=new
+        gravity_timer=get_gravity_time()
+    end
+end
+
+
+function get_gravity_time()
+    if score>=40 then
+        return 90
+    elseif score>=25 then
+        return 120
+    elseif score>=15 then
+        return 150
+    elseif score>=5 then
+        return 165
+    else
+        return 180
+    end
+end
+
+
+function get_spawn_rate()
+    if score>=40 then
+        return 20
+    elseif score>=25 then
+        return 28
+    elseif score>=15 then
+        return 36
+    elseif score>=5 then
+        return 45
+    else
+        return 60
+    end
+end
+
+
+-- spawning
+
+function spawn_good()
+    local p=random_spawn()
+
+    add(good,{
+        x=p.x,
+        y=p.y,
+        dx=rnd(.4)-.2,
+        dy=rnd(.4)-.2,
+        r=2,
+        g=.025,
+        maxspd=1.8
+    })
+end
+
+
+function spawn_bad()
+    local p=random_spawn()
+
+    add(bad,{
+        x=p.x,
+        y=p.y,
+        dx=rnd(.5)-.25,
+        dy=rnd(.5)-.25,
+        r=3,
+        g=.035,
+        maxspd=2.1
+    })
+end
+
+
+function random_spawn()
+    local x=rnd(120)+4
+    local y=rnd(120)+4
+
+    -- don't spawn directly on the player
+    while distance(x,y,player.x,player.y)<20 do
+        x=rnd(120)+4
+        y=rnd(120)+4
+    end
+
+    return {x=x,y=y}
+end
+
+
+function distance(x1,y1,x2,y2)
+    local dx=x1-x2
+    local dy=y1-y2
+    return sqrt(dx*dx+dy*dy)
+end
+
+
+-- drawing
+
+function _draw()
+    cls(1)
+
+    draw_arena()
+    draw_objects()
+    draw_player()
+    draw_ui()
+
+    if game_over then
+        draw_game_over()
+    end
+end
+
+
+function draw_arena()
+    -- background
+    map(0,0,0,0,16,16)
+
+    -- gravity indicator
+    draw_gravity()
+end
+
+
+function draw_gravity()
+    local gx=64
+    local gy=14
+
+    if gravity_timer<60 then
+        -- flashing warning
+        if flr(gravity_timer/5)%2==0 then
+            print("warning!",43,2,8)
+        end
+    end
+
+    if gravity.x == 1 then
+        spr(5, gx - 4, gy - 4, 1, 1, false, false)
+    elseif gravity.x == -1 then
+        spr(5, gx - 4, gy - 4, 1, 1, true, false)
+    elseif gravity.y == 1 then
+        spr(6, gx - 4, gy - 4, 1, 1, false, true)
+    elseif gravity.y == -1 then
+        spr(6, gx - 4, gy - 4, 1, 1, false, false)
+    end
+end
+
+
+function draw_objects()
+    -- good object
+    for p in all(good) do
+        spr(4,p.x-4,p.y-4)
+    end
+
+    -- bad object
+    for p in all(bad) do
+        spr(3,p.x-4,p.y-4)
+    end
+end
+
+
+function draw_player()
+    -- blink while invincible
+    if player.inv>0 and flr(player.inv/5)%2==0 then
+        return
+    end
+    
+    if player.face==1 then
+        spr(2,player.x-4,player.y-4)
+    else
+        spr(2,player.x-4,player.y-4,1,1,true)
+    end
+end
+
+
+function draw_ui()
+    print("score "..score,4,4,7)
+
+    -- hearts
+    for i=1,3 do
+        if i<=lives then
+            print("♥",4+(i-1)*8,115,8)
+        end
+    end
+
+    -- gravity status
+    if gravity_timer<60 then
+        local n=ceil(gravity_timer/30)
+        print(n,123,4,8)
+    end
+end
+
+
+function draw_game_over()
+    rectfill(18,45,109,82,0)
+    rect(18,45,109,82,8)
+
+    print("oops! game over",31,51,8)
+    print("score: "..score,46,61,7)
+    print("press ❎/🅾️",38,71,6)
+end
+
+
+function ceil(n)
+    return -flr(-n)
+end
+__gfx__
+00000000ffffffffb000000000000000000000000088000000088000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000ffffffff0b00b00000333300009999000008880000888800000000000000000000000000000000000000000000000000000000000000000000000000
+00700700ffffffff0bbbbb0003313330099499900000888008888880000000000000000000000000000000000000000000000000000000000000000000000000
+00077000ffffffff00bb1bbb03333330099999908888888808888880000000000000000000000000000000000000000000000000000000000000000000000000
+00077000ffffffff00bbbaaa03333130099994908888888888088088000000000000000000000000000000000000000000000000000000000000000000000000
+00700700ffffffff0baaa80001331330049949900000888080088008000000000000000000000000000000000000000000000000000000000000000000000000
+00000000ffffffff0b00088800333300009999000008880000088000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000ffffffffb000008800000000000000000088000000088000000000000000000000000000000000000000000000000000000000000000000000000000
+__map__
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101010101010101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__sfx__
+000100000155000550005500255003550085500f55011550005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500
+001000000f5500a550065500355003550025500155000500005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500
+00100000007000070000700007000070001700027000470007400064000540004400034000140000400004000440003400034000240002400024000240000400103000f300003000030000300003000030000300
