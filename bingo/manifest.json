@@ -1,0 +1,810 @@
+{
+  "phrases": [
+    "Item Collected",
+    "Damage Taken",
+    "Game Over",
+    "Level Complete",
+    "Enemy Defeated",
+    "Power-Up",
+    "Low Health",
+    "Danger Nearby",
+    "Time Running Out",
+    "Secret Discovered",
+    "Ability Ready",
+    "Checkpoint Reached",
+    "Door Opened",
+    "Action Failed",
+    "Menu Selection",
+    "New Objective",
+    "Victory",
+    "Defeat",
+    "Mystery",
+    "Fear",
+    "Safety",
+    "Tension",
+    "Healing",
+    "Enemy Approaching"
+  ],
+  "sounds": [
+    {
+      "id": "37b4af3799b5",
+      "number": 1,
+      "filename": "53439420-retro-hurt-sound-01-474779.mp3",
+      "name": "Retro Hurt Sound 01",
+      "type": "effect",
+      "category": "Combat",
+      "associations": [
+        "Damage Taken",
+        "Enemy Defeated"
+      ],
+      "url": "audio/53439420-retro-hurt-sound-01-474779.mp3"
+    },
+    {
+      "id": "bbc3d7e25f72",
+      "number": 2,
+      "filename": "53439420-retro-jump-sound-04-474783.mp3",
+      "name": "Retro Jump Sound 04",
+      "type": "effect",
+      "category": "Movement",
+      "associations": [
+        "Ability Ready",
+        "Action Failed"
+      ],
+      "url": "audio/53439420-retro-jump-sound-04-474783.mp3"
+    },
+    {
+      "id": "a1df0425cffa",
+      "number": 3,
+      "filename": "53439420-retro-siren-sound-474816.mp3",
+      "name": "Retro Siren Sound",
+      "type": "effect",
+      "category": "Danger",
+      "associations": [
+        "Low Health",
+        "Danger Nearby",
+        "Time Running Out",
+        "Tension"
+      ],
+      "url": "audio/53439420-retro-siren-sound-474816.mp3"
+    },
+    {
+      "id": "0f7e3b8f8b11",
+      "number": 4,
+      "filename": "Alpha Dance.ogg",
+      "name": "Alpha Dance",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/Alpha Dance.ogg"
+    },
+    {
+      "id": "8ddd92f56b95",
+      "number": 5,
+      "filename": "cartoon_music-arcade-game-achievement-bling-489759.mp3",
+      "name": "Arcade Game Achievement Bling",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Victory",
+        "Level Complete",
+        "Checkpoint Reached"
+      ],
+      "url": "audio/cartoon_music-arcade-game-achievement-bling-489759.mp3"
+    },
+    {
+      "id": "74eb5f098cd7",
+      "number": 6,
+      "filename": "cartoon_music-cartoon-game-upgrade-494470.mp3",
+      "name": "Cartoon Game Upgrade",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Power-Up",
+        "Healing",
+        "Ability Ready"
+      ],
+      "url": "audio/cartoon_music-cartoon-game-upgrade-494470.mp3"
+    },
+    {
+      "id": "1306dc796685",
+      "number": 7,
+      "filename": "cartoon_music-correct-game-show-alert-499485.mp3",
+      "name": "Correct Game Show Alert",
+      "type": "effect",
+      "category": "Interface",
+      "associations": [
+        "Menu Selection",
+        "New Objective",
+        "Door Opened",
+        "Ability Ready"
+      ],
+      "url": "audio/cartoon_music-correct-game-show-alert-499485.mp3"
+    },
+    {
+      "id": "9edae56fb79c",
+      "number": 8,
+      "filename": "cartoon_music-kids-game-victory-504518.mp3",
+      "name": "Kids Game Victory",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Victory",
+        "Level Complete",
+        "Checkpoint Reached"
+      ],
+      "url": "audio/cartoon_music-kids-game-victory-504518.mp3"
+    },
+    {
+      "id": "5823b39356ab",
+      "number": 9,
+      "filename": "cartoon_music-notification-bell-classic-ding-508693.mp3",
+      "name": "Notification Bell Classic Ding",
+      "type": "effect",
+      "category": "Interface",
+      "associations": [
+        "Menu Selection",
+        "New Objective",
+        "Door Opened",
+        "Ability Ready"
+      ],
+      "url": "audio/cartoon_music-notification-bell-classic-ding-508693.mp3"
+    },
+    {
+      "id": "a8f26aadced5",
+      "number": 10,
+      "filename": "Cheerful Annoyance.ogg",
+      "name": "Cheerful Annoyance",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/Cheerful Annoyance.ogg"
+    },
+    {
+      "id": "e877405c2a64",
+      "number": 11,
+      "filename": "Drumming Sticks.ogg",
+      "name": "Drumming Sticks",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Tension"
+      ],
+      "url": "audio/Drumming Sticks.ogg"
+    },
+    {
+      "id": "2b9e6b03d781",
+      "number": 12,
+      "filename": "edr-8-bit-jump-001-171817.mp3",
+      "name": "8 Bit Jump 001",
+      "type": "effect",
+      "category": "Movement",
+      "associations": [
+        "Ability Ready",
+        "Action Failed"
+      ],
+      "url": "audio/edr-8-bit-jump-001-171817.mp3"
+    },
+    {
+      "id": "0fe93bc5e16c",
+      "number": 13,
+      "filename": "edr-video-game-hit-noise-001-135821.mp3",
+      "name": "Video Game Hit Noise 001",
+      "type": "effect",
+      "category": "Combat",
+      "associations": [
+        "Damage Taken",
+        "Enemy Defeated"
+      ],
+      "url": "audio/edr-video-game-hit-noise-001-135821.mp3"
+    },
+    {
+      "id": "59d12deb0014",
+      "number": 14,
+      "filename": "ejah_music-classic-suspense-chord-388521.mp3",
+      "name": "Classic Suspense Chord",
+      "type": "effect",
+      "category": "Danger",
+      "associations": [
+        "Low Health",
+        "Danger Nearby",
+        "Time Running Out",
+        "Tension"
+      ],
+      "url": "audio/ejah_music-classic-suspense-chord-388521.mp3"
+    },
+    {
+      "id": "ed7a256a5117",
+      "number": 15,
+      "filename": "Farm Frolics.ogg",
+      "name": "Farm Frolics",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/Farm Frolics.ogg"
+    },
+    {
+      "id": "0c462ac00d83",
+      "number": 16,
+      "filename": "Flowing Rocks.ogg",
+      "name": "Flowing Rocks",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/Flowing Rocks.ogg"
+    },
+    {
+      "id": "3026abeddf79",
+      "number": 17,
+      "filename": "freesound_community-086354_8-bit-arcade-video-game-start-sound-effect-gun-reload-and-jump-81124.mp3",
+      "name": "086354 8 Bit Arcade Video Game Start Sound Effect Gun Reload And Jump",
+      "type": "effect",
+      "category": "Interface",
+      "associations": [
+        "Menu Selection",
+        "New Objective",
+        "Door Opened",
+        "Ability Ready"
+      ],
+      "url": "audio/freesound_community-086354_8-bit-arcade-video-game-start-sound-effect-gun-reload-and-jump-81124.mp3"
+    },
+    {
+      "id": "c6196fdbaaa3",
+      "number": 18,
+      "filename": "freesound_community-game-start-6104.mp3",
+      "name": "Game Start",
+      "type": "effect",
+      "category": "Interface",
+      "associations": [
+        "Menu Selection",
+        "New Objective",
+        "Door Opened",
+        "Ability Ready"
+      ],
+      "url": "audio/freesound_community-game-start-6104.mp3"
+    },
+    {
+      "id": "a6eb0e534d88",
+      "number": 19,
+      "filename": "freesound_community-short-success-sound-glockenspiel-treasure-video-game-6346.mp3",
+      "name": "Short Success Sound Glockenspiel Treasure Video Game",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Item Collected",
+        "Secret Discovered"
+      ],
+      "url": "audio/freesound_community-short-success-sound-glockenspiel-treasure-video-game-6346.mp3"
+    },
+    {
+      "id": "b58bf6d33f75",
+      "number": 20,
+      "filename": "freesound_community-winharpsichord-39642.mp3",
+      "name": "Winharpsichord",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Victory",
+        "Level Complete",
+        "Checkpoint Reached"
+      ],
+      "url": "audio/freesound_community-winharpsichord-39642.mp3"
+    },
+    {
+      "id": "eb3fd42458e3",
+      "number": 21,
+      "filename": "freesound_gamestudio-material-buy-success-394517.mp3",
+      "name": "Material Buy Success",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Item Collected",
+        "Secret Discovered"
+      ],
+      "url": "audio/freesound_gamestudio-material-buy-success-394517.mp3"
+    },
+    {
+      "id": "5d35d8774efa",
+      "number": 22,
+      "filename": "freesound_gamestudio-material-gold-394476.mp3",
+      "name": "Material Gold",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Item Collected",
+        "Secret Discovered"
+      ],
+      "url": "audio/freesound_gamestudio-material-gold-394476.mp3"
+    },
+    {
+      "id": "735719fefa6c",
+      "number": 23,
+      "filename": "Game Over.ogg",
+      "name": "Game Over",
+      "type": "music",
+      "category": "Failure",
+      "associations": [
+        "Game Over",
+        "Defeat",
+        "Action Failed"
+      ],
+      "url": "audio/Game Over.ogg"
+    },
+    {
+      "id": "a1ebe4be1e61",
+      "number": 24,
+      "filename": "German Virtue.ogg",
+      "name": "German Virtue",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Tension"
+      ],
+      "url": "audio/German Virtue.ogg"
+    },
+    {
+      "id": "3460a874ef53",
+      "number": 25,
+      "filename": "igors93-turbo_coin_run-514606.mp3",
+      "name": "Turbo Coin Run",
+      "type": "music",
+      "category": "Reward",
+      "associations": [
+        "Item Collected",
+        "Secret Discovered"
+      ],
+      "url": "audio/igors93-turbo_coin_run-514606.mp3"
+    },
+    {
+      "id": "7a9c55f6371a",
+      "number": 26,
+      "filename": "Infinite Descent.ogg",
+      "name": "Infinite Descent",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Fear",
+        "Tension"
+      ],
+      "url": "audio/Infinite Descent.ogg"
+    },
+    {
+      "id": "942648917535",
+      "number": 27,
+      "filename": "Italian Mom.ogg",
+      "name": "Italian Mom",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Tension"
+      ],
+      "url": "audio/Italian Mom.ogg"
+    },
+    {
+      "id": "d5b1335ecaf0",
+      "number": 28,
+      "filename": "make_more_sound-8-bit-video-game-fail-version-2-145478.mp3",
+      "name": "8 Bit Video Game Fail Version 2",
+      "type": "effect",
+      "category": "Failure",
+      "associations": [
+        "Game Over",
+        "Defeat",
+        "Action Failed"
+      ],
+      "url": "audio/make_more_sound-8-bit-video-game-fail-version-2-145478.mp3"
+    },
+    {
+      "id": "b6f0c70b322c",
+      "number": 29,
+      "filename": "make_more_sound-8-bit-video-game-lose-sound-version-1-145828.mp3",
+      "name": "8 Bit Video Game Lose Sound Version 1",
+      "type": "effect",
+      "category": "Failure",
+      "associations": [
+        "Game Over",
+        "Defeat",
+        "Action Failed"
+      ],
+      "url": "audio/make_more_sound-8-bit-video-game-lose-sound-version-1-145828.mp3"
+    },
+    {
+      "id": "ef281d2b338f",
+      "number": 30,
+      "filename": "metaphor_refantazio_battletheme.mp3",
+      "name": "Metaphor: ReFantazio \u2014 Battle Theme",
+      "type": "music",
+      "category": "Combat",
+      "associations": [
+        "Enemy Approaching",
+        "Tension",
+        "Danger Nearby"
+      ],
+      "url": "audio/metaphor_refantazio_battletheme.mp3"
+    },
+    {
+      "id": "24be4d7d9913",
+      "number": 31,
+      "filename": "Mishief Stroll.ogg",
+      "name": "Mishief Stroll",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Tension"
+      ],
+      "url": "audio/Mishief Stroll.ogg"
+    },
+    {
+      "id": "7ebe1d6086a6",
+      "number": 32,
+      "filename": "Mission Plausible.ogg",
+      "name": "Mission Plausible",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Tension"
+      ],
+      "url": "audio/Mission Plausible.ogg"
+    },
+    {
+      "id": "4e33d177d406",
+      "number": 33,
+      "filename": "Night at the Beach.ogg",
+      "name": "Night At The Beach",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Fear",
+        "Tension"
+      ],
+      "url": "audio/Night at the Beach.ogg"
+    },
+    {
+      "id": "a58264d33861",
+      "number": 34,
+      "filename": "olivia_parker-classic-punch-impact-demo-309547.mp3",
+      "name": "Classic Punch Impact Demo",
+      "type": "effect",
+      "category": "Combat",
+      "associations": [
+        "Damage Taken",
+        "Enemy Defeated"
+      ],
+      "url": "audio/olivia_parker-classic-punch-impact-demo-309547.mp3"
+    },
+    {
+      "id": "475a5d1aca94",
+      "number": 35,
+      "filename": "phatphrogstudio-abyssal-eclipse-demonx27s-bane-477472.mp3",
+      "name": "Abyssal Eclipse Demons Bane",
+      "type": "music",
+      "category": "Combat",
+      "associations": [
+        "Enemy Approaching",
+        "Tension",
+        "Danger Nearby"
+      ],
+      "url": "audio/phatphrogstudio-abyssal-eclipse-demonx27s-bane-477472.mp3"
+    },
+    {
+      "id": "f99d6ad342ee",
+      "number": 36,
+      "filename": "phatphrogstudio-ashroot-canopy-feral-whisper-royalty-free-rpg-music-502320.mp3",
+      "name": "Ashroot Canopy Feral Whisper Royalty Free Rpg Music",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Fear",
+        "Tension"
+      ],
+      "url": "audio/phatphrogstudio-ashroot-canopy-feral-whisper-royalty-free-rpg-music-502320.mp3"
+    },
+    {
+      "id": "0b10c2bab59f",
+      "number": 37,
+      "filename": "phatphrogstudio-bards-rest-runestone-tavern-royalty-free-rpg-music-502319.mp3",
+      "name": "Bards Rest Runestone Tavern Royalty Free Rpg Music",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/phatphrogstudio-bards-rest-runestone-tavern-royalty-free-rpg-music-502319.mp3"
+    },
+    {
+      "id": "4df21958f482",
+      "number": 38,
+      "filename": "phatphrogstudio-defeat-outros-game-sounds-collection-477823.mp3",
+      "name": "Defeat Outros Game Sounds Collection",
+      "type": "effect",
+      "category": "Failure",
+      "associations": [
+        "Game Over",
+        "Defeat",
+        "Action Failed"
+      ],
+      "url": "audio/phatphrogstudio-defeat-outros-game-sounds-collection-477823.mp3"
+    },
+    {
+      "id": "78349eb32f31",
+      "number": 39,
+      "filename": "phatphrogstudio-phatphrogstudiocom-anime-battle-music-478168.mp3",
+      "name": "Phatphrogstudiocom Anime Battle Music",
+      "type": "music",
+      "category": "Combat",
+      "associations": [
+        "Enemy Approaching",
+        "Tension",
+        "Danger Nearby"
+      ],
+      "url": "audio/phatphrogstudio-phatphrogstudiocom-anime-battle-music-478168.mp3"
+    },
+    {
+      "id": "1492a273aa2f",
+      "number": 40,
+      "filename": "phatphrogstudio-phatphrogstudiocom-arcane-throne-heir-of-valor-477466.mp3",
+      "name": "Phatphrogstudiocom Arcane Throne Heir Of Valor",
+      "type": "music",
+      "category": "Combat",
+      "associations": [
+        "Enemy Approaching",
+        "Tension",
+        "Danger Nearby"
+      ],
+      "url": "audio/phatphrogstudio-phatphrogstudiocom-arcane-throne-heir-of-valor-477466.mp3"
+    },
+    {
+      "id": "5037427dd0de",
+      "number": 41,
+      "filename": "phatphrogstudio-pyro-witch-fireborn-saga-royalty-free-action-music-502322.mp3",
+      "name": "Pyro Witch Fireborn Saga Royalty Free Action Music",
+      "type": "music",
+      "category": "Combat",
+      "associations": [
+        "Enemy Approaching",
+        "Tension",
+        "Danger Nearby"
+      ],
+      "url": "audio/phatphrogstudio-pyro-witch-fireborn-saga-royalty-free-action-music-502322.mp3"
+    },
+    {
+      "id": "222099b7edda",
+      "number": 42,
+      "filename": "phatphrogstudio-samurai-spirit-cursed-oni-edm-royalty-free-music-502868.mp3",
+      "name": "Samurai Spirit Cursed Oni Edm Royalty Free Music",
+      "type": "music",
+      "category": "Combat",
+      "associations": [
+        "Enemy Approaching",
+        "Tension",
+        "Danger Nearby"
+      ],
+      "url": "audio/phatphrogstudio-samurai-spirit-cursed-oni-edm-royalty-free-music-502868.mp3"
+    },
+    {
+      "id": "2efc75515e65",
+      "number": 43,
+      "filename": "phatphrogstudio-steel-guards-echoes-of-steel-478154.mp3",
+      "name": "Steel Guards Echoes Of Steel",
+      "type": "music",
+      "category": "Combat",
+      "associations": [
+        "Enemy Approaching",
+        "Tension",
+        "Danger Nearby"
+      ],
+      "url": "audio/phatphrogstudio-steel-guards-echoes-of-steel-478154.mp3"
+    },
+    {
+      "id": "f95f7f49fa6b",
+      "number": 44,
+      "filename": "Polka Train.ogg",
+      "name": "Polka Train",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/Polka Train.ogg"
+    },
+    {
+      "id": "f0c517fd6aaf",
+      "number": 45,
+      "filename": "Sad Descent.ogg",
+      "name": "Sad Descent",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Fear",
+        "Tension"
+      ],
+      "url": "audio/Sad Descent.ogg"
+    },
+    {
+      "id": "f75790c63428",
+      "number": 46,
+      "filename": "Sad Town.ogg",
+      "name": "Sad Town",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Fear",
+        "Tension"
+      ],
+      "url": "audio/Sad Town.ogg"
+    },
+    {
+      "id": "78db1aee675f",
+      "number": 47,
+      "filename": "soundreality-game-explosion-321700.mp3",
+      "name": "Game Explosion",
+      "type": "effect",
+      "category": "Combat",
+      "associations": [
+        "Damage Taken",
+        "Enemy Defeated"
+      ],
+      "url": "audio/soundreality-game-explosion-321700.mp3"
+    },
+    {
+      "id": "4bdea33b90fa",
+      "number": 48,
+      "filename": "soundreality-virus-attack-136381.mp3",
+      "name": "Virus Attack",
+      "type": "effect",
+      "category": "Danger",
+      "associations": [
+        "Low Health",
+        "Danger Nearby",
+        "Time Running Out",
+        "Tension"
+      ],
+      "url": "audio/soundreality-virus-attack-136381.mp3"
+    },
+    {
+      "id": "f5335c1044ca",
+      "number": 49,
+      "filename": "soundreality-wrong-place-129242.mp3",
+      "name": "Wrong Place",
+      "type": "effect",
+      "category": "Failure",
+      "associations": [
+        "Game Over",
+        "Defeat",
+        "Action Failed"
+      ],
+      "url": "audio/soundreality-wrong-place-129242.mp3"
+    },
+    {
+      "id": "c1ad3696d8b1",
+      "number": 50,
+      "filename": "Space Cadet.ogg",
+      "name": "Space Cadet",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Fear",
+        "Tension"
+      ],
+      "url": "audio/Space Cadet.ogg"
+    },
+    {
+      "id": "5a416a574739",
+      "number": 51,
+      "filename": "Swinging Pants.ogg",
+      "name": "Swinging Pants",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/Swinging Pants.ogg"
+    },
+    {
+      "id": "09410aef027b",
+      "number": 52,
+      "filename": "Time Driving.ogg",
+      "name": "Time Driving",
+      "type": "music",
+      "category": "Atmosphere",
+      "associations": [
+        "Mystery",
+        "Tension"
+      ],
+      "url": "audio/Time Driving.ogg"
+    },
+    {
+      "id": "fb0a9a281b66",
+      "number": 53,
+      "filename": "universfield-level-up-08-402152.mp3",
+      "name": "Level Up 08",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Power-Up",
+        "Healing",
+        "Ability Ready"
+      ],
+      "url": "audio/universfield-level-up-08-402152.mp3"
+    },
+    {
+      "id": "f80e11e791a0",
+      "number": 54,
+      "filename": "vadim_makes_sound-retro-arcade-coin-pickup-622953.mp3",
+      "name": "Retro Arcade Coin Pickup",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Item Collected",
+        "Secret Discovered"
+      ],
+      "url": "audio/vadim_makes_sound-retro-arcade-coin-pickup-622953.mp3"
+    },
+    {
+      "id": "a959f217bdbf",
+      "number": 55,
+      "filename": "vadim_makes_sound-retro-arcade-power-up-622944.mp3",
+      "name": "Retro Arcade Power Up",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Power-Up",
+        "Healing",
+        "Ability Ready"
+      ],
+      "url": "audio/vadim_makes_sound-retro-arcade-power-up-622944.mp3"
+    },
+    {
+      "id": "2cd0ce6d30b6",
+      "number": 56,
+      "filename": "vadim_makes_sound-retro-arcade-stage-clear-622946.mp3",
+      "name": "Retro Arcade Stage Clear",
+      "type": "effect",
+      "category": "Reward",
+      "associations": [
+        "Victory",
+        "Level Complete",
+        "Checkpoint Reached"
+      ],
+      "url": "audio/vadim_makes_sound-retro-arcade-stage-clear-622946.mp3"
+    },
+    {
+      "id": "60f25ca74944",
+      "number": 57,
+      "filename": "Wacky Waiting.ogg",
+      "name": "Wacky Waiting",
+      "type": "music",
+      "category": "Calm",
+      "associations": [
+        "Safety",
+        "Healing"
+      ],
+      "url": "audio/Wacky Waiting.ogg"
+    }
+  ]
+}
