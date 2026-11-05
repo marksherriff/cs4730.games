@@ -1,0 +1,42 @@
+[
+  {
+    "label": "Sound 01",
+    "url": "assets/sound-01.mp3"
+  },
+  {
+    "label": "Sound 02",
+    "url": "assets/sound-02.mp3"
+  },
+  {
+    "label": "Sound 03",
+    "url": "assets/sound-03.mp3"
+  },
+  {
+    "label": "Sound 04",
+    "url": "assets/sound-04.mp3"
+  },
+  {
+    "label": "Sound 05",
+    "url": "assets/sound-05.mp3"
+  },
+  {
+    "label": "Sound 06",
+    "url": "assets/sound-06.mp3"
+  },
+  {
+    "label": "Sound 07",
+    "url": "assets/sound-07.mp3"
+  },
+  {
+    "label": "Sound 08",
+    "url": "assets/sound-08.mp3"
+  },
+  {
+    "label": "Sound 09",
+    "url": "assets/sound-09.mp3"
+  },
+  {
+    "label": "Sound 10",
+    "url": "assets/sound-10.mp3"
+  }
+]
